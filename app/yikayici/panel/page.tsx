@@ -259,7 +259,7 @@ export default function YikayiciPanel() {
               <h3 className="font-bold text-slate-800 mb-4">Müsaitlik Durumu</h3>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-slate-700">{musaitlik ? "Şu an müsaitism" : "Şu an meşgulüm"}</p>
+                  <p className="text-sm font-medium text-slate-700">{musaitlik ? "Şu an müsaitim" : "Şu an meşgulüm"}</p>
                   <p className="text-xs text-slate-400 mt-0.5">{musaitlik ? "Yeni siparişler alabilirsiniz" : "Yeni sipariş almıyorsunuz"}</p>
                 </div>
                 <button
