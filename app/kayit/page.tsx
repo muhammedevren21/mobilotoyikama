@@ -30,13 +30,11 @@ export default function KayitPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* HEADER */}
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
         <Link href="/giris" className="text-gray-600 text-sm hover:text-blue-600">Zaten hesabın var mı? Giriş yap</Link>
       </header>
 
-      {/* FORM */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Hesap Oluştur</h1>
@@ -50,7 +48,7 @@ export default function KayitPage() {
                 value={form.ad}
                 onChange={(e) => setForm({ ...form, ad: e.target.value })}
                 placeholder="Adınız"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
               />
             </div>
             <div>
@@ -60,7 +58,7 @@ export default function KayitPage() {
                 value={form.soyad}
                 onChange={(e) => setForm({ ...form, soyad: e.target.value })}
                 placeholder="Soyadınız"
-                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
               />
             </div>
           </div>
@@ -72,7 +70,7 @@ export default function KayitPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="ornek@email.com"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 
@@ -83,7 +81,7 @@ export default function KayitPage() {
               value={form.telefon}
               onChange={(e) => setForm({ ...form, telefon: e.target.value })}
               placeholder="05XX XXX XX XX"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 
@@ -94,7 +92,7 @@ export default function KayitPage() {
               value={form.sifre}
               onChange={(e) => setForm({ ...form, sifre: e.target.value })}
               placeholder="En az 6 karakter"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 
@@ -105,7 +103,7 @@ export default function KayitPage() {
               value={form.sifreTekrar}
               onChange={(e) => setForm({ ...form, sifreTekrar: e.target.value })}
               placeholder="Şifrenizi tekrar girin"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 

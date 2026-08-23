@@ -19,13 +19,11 @@ export default function GirisPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* HEADER */}
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
         <Link href="/kayit" className="text-gray-600 text-sm hover:text-blue-600">Hesabın yok mu? Kayıt ol</Link>
       </header>
 
-      {/* FORM */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 w-full max-w-md">
           <h1 className="text-2xl font-bold text-gray-800 mb-2">Giriş Yap</h1>
@@ -38,7 +36,7 @@ export default function GirisPage() {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="ornek@email.com"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
           </div>
 
@@ -49,7 +47,7 @@ export default function GirisPage() {
               value={form.sifre}
               onChange={(e) => setForm({ ...form, sifre: e.target.value })}
               placeholder="Şifreniz"
-              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
             />
             <div className="text-right mt-1">
               <Link href="/sifremi-unuttum" className="text-xs text-blue-500 hover:underline">Şifremi unuttum</Link>
