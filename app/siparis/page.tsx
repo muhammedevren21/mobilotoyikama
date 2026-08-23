@@ -32,13 +32,11 @@ export default function SiparisPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
-      {/* HEADER */}
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
         <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
         <span className="text-gray-500 text-sm">Sipariş Ver</span>
       </header>
 
-      {/* ADIM GÖSTERGESİ */}
       <div className="bg-white border-b border-gray-100 px-6 py-4">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           {adimlar.map((a, i) => (
@@ -61,16 +59,13 @@ export default function SiparisPage() {
         </div>
       </div>
 
-      {/* İÇERİK */}
       <div className="flex-1 flex items-start justify-center px-4 py-8">
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 w-full max-w-lg">
 
-          {/* ADIM 1 - ADRES */}
           {adim === 1 && (
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Adresiniz</h2>
               <p className="text-gray-500 text-sm mb-5">Yıkama yapılacak adresi girin</p>
-
               <div className="mb-3">
                 <label className="text-sm text-gray-600 block mb-1">Adres</label>
                 <input
@@ -81,7 +76,6 @@ export default function SiparisPage() {
                   className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
                 />
               </div>
-
               <div className="mb-5">
                 <label className="text-sm text-gray-600 block mb-1">Adres Detayı (isteğe bağlı)</label>
                 <input
@@ -92,7 +86,6 @@ export default function SiparisPage() {
                   className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
                 />
               </div>
-
               <button
                 onClick={() => { if (form.adres) setAdim(2); }}
                 disabled={!form.adres}
@@ -103,21 +96,17 @@ export default function SiparisPage() {
             </>
           )}
 
-          {/* ADIM 2 - HİZMET */}
           {adim === 2 && (
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Hizmet Seçin</h2>
               <p className="text-gray-500 text-sm mb-5">Size uygun paketi seçin</p>
-
               <div className="space-y-3 mb-5">
                 {hizmetler.map((h) => (
                   <div
                     key={h.id}
                     onClick={() => setForm({ ...form, hizmet: h.id })}
                     className={`border rounded-xl p-4 cursor-pointer transition-all ${
-                      form.hizmet === h.id
-                        ? "border-blue-500 bg-blue-50"
-                        : "border-gray-200 hover:border-blue-300"
+                      form.hizmet === h.id ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-blue-300"
                     }`}
                   >
                     <div className="flex items-center justify-between">
@@ -133,23 +122,13 @@ export default function SiparisPage() {
                   </div>
                 ))}
               </div>
-
               <div className="flex gap-3">
-                <button onClick={() => setAdim(1)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">
-                  ← Geri
-                </button>
-                <button
-                  onClick={() => { if (form.hizmet) setAdim(3); }}
-                  disabled={!form.hizmet}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40"
-                >
-                  Devam Et →
-                </button>
+                <button onClick={() => setAdim(1)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
+                <button onClick={() => { if (form.hizmet) setAdim(3); }} disabled={!form.hizmet} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40">Devam Et →</button>
               </div>
             </>
           )}
 
-          {/* ADIM 3 - ARAÇ BİLGİSİ */}
           {adim === 3 && (
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Araç Bilgisi</h2>
@@ -162,28 +141,28 @@ export default function SiparisPage() {
                   value={form.plaka}
                   onChange={(e) => setForm({ ...form, plaka: e.target.value.toUpperCase() })}
                   placeholder="34 ABC 123"
-                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 uppercase"
+                  className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
                 />
               </div>
 
               <div className="mb-3">
                 <label className="text-sm text-gray-600 block mb-1">Araç Fotoğrafı</label>
-                <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-300 transition-colors">
+                <label className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer">
                   {form.aracFoto ? (
                     <div className="text-green-600 font-medium text-sm">✓ {form.aracFoto.name}</div>
                   ) : (
                     <>
                       <div className="text-3xl mb-2">📷</div>
-                      <div className="text-gray-500 text-sm mb-2">Fotoğraf yüklemek için tıklayın</div>
+                      <div className="text-gray-500 text-sm">Fotoğraf yüklemek için tıklayın</div>
                     </>
                   )}
                   <input
                     type="file"
                     accept="image/*"
                     onChange={(e) => setForm({ ...form, aracFoto: e.target.files?.[0] || null })}
-                    className="absolute inset-0 opacity-0 cursor-pointer"
+                    className="hidden"
                   />
-                </div>
+                </label>
               </div>
 
               <div className="mb-5">
@@ -198,33 +177,22 @@ export default function SiparisPage() {
               </div>
 
               <div className="flex gap-3">
-                <button onClick={() => setAdim(2)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">
-                  ← Geri
-                </button>
-                <button
-                  onClick={() => { if (form.plaka) setAdim(4); }}
-                  disabled={!form.plaka}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40"
-                >
-                  Devam Et →
-                </button>
+                <button onClick={() => setAdim(2)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
+                <button onClick={() => { if (form.plaka) setAdim(4); }} disabled={!form.plaka} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40">Devam Et →</button>
               </div>
             </>
           )}
 
-          {/* ADIM 4 - ÖZET */}
           {adim === 4 && (
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Sipariş Özeti</h2>
               <p className="text-gray-500 text-sm mb-5">Bilgilerinizi kontrol edin</p>
-
               <div className="space-y-3 mb-5">
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="text-xs text-gray-400 mb-1">📍 Adres</div>
                   <div className="text-sm text-gray-800 font-medium">{form.adres}</div>
                   {form.adresDetay && <div className="text-xs text-gray-500 mt-0.5">{form.adresDetay}</div>}
                 </div>
-
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="text-xs text-gray-400 mb-1">🧹 Hizmet</div>
                   <div className="flex justify-between items-center">
@@ -232,13 +200,11 @@ export default function SiparisPage() {
                     <div className="text-blue-600 font-bold">{secilenHizmet?.price}₺</div>
                   </div>
                 </div>
-
                 <div className="bg-gray-50 rounded-xl p-4">
                   <div className="text-xs text-gray-400 mb-1">🚗 Araç</div>
                   <div className="text-sm text-gray-800 font-medium">{form.plaka}</div>
                   {form.aracFoto && <div className="text-xs text-gray-500 mt-0.5">📷 Fotoğraf eklendi</div>}
                 </div>
-
                 {form.not && (
                   <div className="bg-gray-50 rounded-xl p-4">
                     <div className="text-xs text-gray-400 mb-1">📝 Not</div>
@@ -246,24 +212,15 @@ export default function SiparisPage() {
                   </div>
                 )}
               </div>
-
               <div className="border-t border-gray-100 pt-4 mb-5">
                 <div className="flex justify-between items-center">
                   <span className="font-bold text-gray-800">Toplam</span>
                   <span className="text-xl font-bold text-blue-600">{secilenHizmet?.price}₺</span>
                 </div>
               </div>
-
               <div className="flex gap-3">
-                <button onClick={() => setAdim(3)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">
-                  ← Geri
-                </button>
-                <button
-                  onClick={() => alert("Sipariş alındı! Yakında sizi arayacağız.")}
-                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700"
-                >
-                  Siparişi Onayla ✓
-                </button>
+                <button onClick={() => setAdim(3)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
+                <button onClick={() => alert("Sipariş alındı! Yakında sizi arayacağız.")} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Siparişi Onayla ✓</button>
               </div>
             </>
           )}
