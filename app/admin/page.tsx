@@ -2,15 +2,54 @@
 
 import { useState } from "react";
 
+// ─── Tipler ───────────────────────────────────────────────────
+interface Siparis {
+  id: string;
+  kullanici: string;
+  yikayici: string;
+  paket: string;
+  tarih: string;
+  tutar: string;
+  durum: string;
+}
+
+interface Yikayici {
+  id: string;
+  ad: string;
+  email: string;
+  telefon: string;
+  bolge: string;
+  tamamlanan: number;
+  puan: number | string;
+  durum: string;
+}
+
+interface Kullanici {
+  id: string;
+  ad: string;
+  email: string;
+  telefon: string;
+  kayitTarih: string;
+  siparisAdet: number;
+  durum: string;
+}
+
+interface Istatistik {
+  label: string;
+  deger: string | number;
+  icon: string;
+  renk: string;
+}
+
 // ─── Dummy Data ───────────────────────────────────────────────
-const istatistikler = [
+const istatistikler: Istatistik[] = [
   { label: "Toplam Sipariş", deger: 148, icon: "📦", renk: "blue" },
   { label: "Aktif Yıkayıcı", deger: 23, icon: "🧹", renk: "green" },
   { label: "Kayıtlı Kullanıcı", deger: 312, icon: "👥", renk: "purple" },
   { label: "Bu Ay Gelir", deger: "₺18.430", icon: "💰", renk: "orange" },
 ];
 
-const siparisler = [
+const siparislerData: Siparis[] = [
   { id: "SP-1052", kullanici: "Mehmet Yılmaz", yikayici: "Atanmadı", paket: "Buharlı Temizlik", tarih: "22 Ağu 2026", tutar: "₺650", durum: "beklemede" },
   { id: "SP-1051", kullanici: "Ayşe Kara", yikayici: "Hasan Usta", paket: "Detaylı İç-Dış", tarih: "21 Ağu 2026", tutar: "₺420", durum: "aktif" },
   { id: "SP-1050", kullanici: "Ali Demir", yikayici: "Murat Temiz", paket: "Standart Dış", tarih: "20 Ağu 2026", tutar: "₺180", durum: "tamamlandi" },
@@ -18,14 +57,14 @@ const siparisler = [
   { id: "SP-1048", kullanici: "Emre Şahin", yikayici: "Atanmadı", paket: "Buharlı Temizlik", tarih: "18 Ağu 2026", tutar: "₺650", durum: "iptal" },
 ];
 
-const yikayicilar = [
+const yikayicilarData: Yikayici[] = [
   { id: "Y-001", ad: "Hasan Usta", email: "hasan@example.com", telefon: "0533 111 22 33", bolge: "Kadıköy", tamamlanan: 42, puan: 4.8, durum: "aktif" },
   { id: "Y-002", ad: "Murat Temiz", email: "murat@example.com", telefon: "0534 222 33 44", bolge: "Beşiktaş", tamamlanan: 28, puan: 4.6, durum: "aktif" },
   { id: "Y-003", ad: "Serkan Yıldız", email: "serkan@example.com", telefon: "0535 333 44 55", bolge: "Üsküdar", tamamlanan: 0, puan: "-", durum: "beklemede" },
   { id: "Y-004", ad: "Burak Aydın", email: "burak@example.com", telefon: "0536 444 55 66", bolge: "Şişli", tamamlanan: 0, puan: "-", durum: "reddedildi" },
 ];
 
-const kullanicilar = [
+const kullanicilarData: Kullanici[] = [
   { id: "U-001", ad: "Mehmet Yılmaz", email: "mehmet@example.com", telefon: "0532 123 45 67", kayitTarih: "10 Oca 2026", siparisAdet: 3, durum: "aktif" },
   { id: "U-002", ad: "Ayşe Kara", email: "ayse@example.com", telefon: "0533 234 56 78", kayitTarih: "15 Şub 2026", siparisAdet: 7, durum: "aktif" },
   { id: "U-003", ad: "Ali Demir", email: "ali@example.com", telefon: "0534 345 67 89", kayitTarih: "3 Mar 2026", siparisAdet: 1, durum: "aktif" },
@@ -33,8 +72,8 @@ const kullanicilar = [
 ];
 
 // ─── Badge ────────────────────────────────────────────────────
-function Badge({ durum }) {
-  const map = {
+function Badge({ durum }: { durum: string }) {
+  const map: Record<string, string> = {
     beklemede: "bg-amber-100 text-amber-700",
     aktif: "bg-blue-100 text-blue-700",
     tamamlandi: "bg-green-100 text-green-700",
@@ -42,7 +81,7 @@ function Badge({ durum }) {
     reddedildi: "bg-red-100 text-red-600",
     engellendi: "bg-red-100 text-red-600",
   };
-  const etiket = {
+  const etiket: Record<string, string> = {
     beklemede: "Beklemede",
     aktif: "Aktif",
     tamamlandi: "Tamamlandı",
@@ -58,8 +97,8 @@ function Badge({ durum }) {
 }
 
 // ─── İstatistik Kartı ─────────────────────────────────────────
-function StatKart({ label, deger, icon, renk }) {
-  const renkMap = {
+function StatKart({ label, deger, icon, renk }: Istatistik) {
+  const renkMap: Record<string, string> = {
     blue: "from-blue-600 to-blue-500",
     green: "from-emerald-600 to-emerald-500",
     purple: "from-violet-600 to-violet-500",
@@ -77,9 +116,9 @@ function StatKart({ label, deger, icon, renk }) {
 // ─── Ana Bileşen ──────────────────────────────────────────────
 export default function AdminPanel() {
   const [aktifSekme, setAktifSekme] = useState("dashboard");
-  const [siparisListesi, setSiparisListesi] = useState(siparisler);
-  const [yikayiciListesi, setYikayiciListesi] = useState(yikayicilar);
-  const [kullaniciListesi, setKullaniciListesi] = useState(kullanicilar);
+  const [siparisListesi, setSiparisListesi] = useState<Siparis[]>(siparislerData);
+  const [yikayiciListesi, setYikayiciListesi] = useState<Yikayici[]>(yikayicilarData);
+  const [kullaniciListesi, setKullaniciListesi] = useState<Kullanici[]>(kullanicilarData);
   const [aramaS, setAramaS] = useState("");
   const [aramaY, setAramaY] = useState("");
   const [aramaK, setAramaK] = useState("");
@@ -91,19 +130,19 @@ export default function AdminPanel() {
     { id: "kullanicilar", label: "Kullanıcılar", icon: "👥" },
   ];
 
-  const siparisGuncelle = (id, yeniDurum) => {
+  const siparisGuncelle = (id: string, yeniDurum: string) => {
     setSiparisListesi((prev) =>
       prev.map((s) => (s.id === id ? { ...s, durum: yeniDurum } : s))
     );
   };
 
-  const yikayiciGuncelle = (id, yeniDurum) => {
+  const yikayiciGuncelle = (id: string, yeniDurum: string) => {
     setYikayiciListesi((prev) =>
       prev.map((y) => (y.id === id ? { ...y, durum: yeniDurum } : y))
     );
   };
 
-  const kullaniciGuncelle = (id, yeniDurum) => {
+  const kullaniciGuncelle = (id: string, yeniDurum: string) => {
     setKullaniciListesi((prev) =>
       prev.map((k) => (k.id === id ? { ...k, durum: yeniDurum } : k))
     );
@@ -131,17 +170,11 @@ export default function AdminPanel() {
       <nav className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shadow-lg">
         <div className="flex items-center gap-3">
           <span className="text-xl font-bold tracking-tight">💧 mobilotoyıkama</span>
-          <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-semibold">
-            ADMIN
-          </span>
+          <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-semibold">ADMIN</span>
         </div>
         <div className="flex items-center gap-4">
-          <a href="/" className="text-slate-400 hover:text-white text-sm transition">
-            Siteye Dön ↗
-          </a>
-          <button className="text-red-400 hover:text-red-300 text-sm font-medium transition">
-            Çıkış
-          </button>
+          <a href="/" className="text-slate-400 hover:text-white text-sm transition">Siteye Dön ↗</a>
+          <button className="text-red-400 hover:text-red-300 text-sm font-medium transition">Çıkış</button>
         </div>
       </nav>
 
@@ -163,9 +196,7 @@ export default function AdminPanel() {
           ))}
         </div>
 
-        {/* ══════════════════════════════
-            DASHBOARD
-        ══════════════════════════════ */}
+        {/* DASHBOARD */}
         {aktifSekme === "dashboard" && (
           <div className="space-y-8">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -173,14 +204,10 @@ export default function AdminPanel() {
                 <StatKart key={ist.label} {...ist} />
               ))}
             </div>
-
-            {/* Son Siparişler */}
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
                 <h2 className="font-bold text-slate-800">Son Siparişler</h2>
-                <button onClick={() => setAktifSekme("siparisler")} className="text-blue-600 text-sm font-medium hover:underline">
-                  Tümünü gör →
-                </button>
+                <button onClick={() => setAktifSekme("siparisler")} className="text-blue-600 text-sm font-medium hover:underline">Tümünü gör →</button>
               </div>
               <div className="divide-y divide-slate-50">
                 {siparisListesi.slice(0, 3).map((s) => (
@@ -198,14 +225,10 @@ export default function AdminPanel() {
                 ))}
               </div>
             </div>
-
-            {/* Onay Bekleyen Yıkayıcılar */}
             <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
               <div className="px-6 py-4 border-b border-amber-100 flex items-center justify-between bg-amber-50">
                 <h2 className="font-bold text-amber-800">⏳ Onay Bekleyen Yıkayıcılar</h2>
-                <button onClick={() => setAktifSekme("yikayicilar")} className="text-amber-700 text-sm font-medium hover:underline">
-                  Tümünü gör →
-                </button>
+                <button onClick={() => setAktifSekme("yikayicilar")} className="text-amber-700 text-sm font-medium hover:underline">Tümünü gör →</button>
               </div>
               <div className="divide-y divide-slate-50">
                 {yikayiciListesi.filter((y) => y.durum === "beklemede").map((y) => (
@@ -215,18 +238,8 @@ export default function AdminPanel() {
                       <p className="text-xs text-slate-400">{y.bolge} · {y.email}</p>
                     </div>
                     <div className="flex gap-2">
-                      <button
-                        onClick={() => yikayiciGuncelle(y.id, "aktif")}
-                        className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold transition"
-                      >
-                        Onayla
-                      </button>
-                      <button
-                        onClick={() => yikayiciGuncelle(y.id, "reddedildi")}
-                        className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg font-semibold transition"
-                      >
-                        Reddet
-                      </button>
+                      <button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">Onayla</button>
+                      <button onClick={() => yikayiciGuncelle(y.id, "reddedildi")} className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg font-semibold transition">Reddet</button>
                     </div>
                   </div>
                 ))}
@@ -238,9 +251,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* ══════════════════════════════
-            SİPARİŞLER
-        ══════════════════════════════ */}
+        {/* SİPARİŞLER */}
         {aktifSekme === "siparisler" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -253,15 +264,12 @@ export default function AdminPanel() {
                 className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
               />
             </div>
-
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
                     {["Sipariş", "Müşteri", "Yıkayıcı", "Paket", "Tarih", "Tutar", "Durum", "İşlem"].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        {h}
-                      </th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -298,9 +306,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* ══════════════════════════════
-            YIKAYICILAR
-        ══════════════════════════════ */}
+        {/* YIKAYICILAR */}
         {aktifSekme === "yikayicilar" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -313,7 +319,6 @@ export default function AdminPanel() {
                 className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
               />
             </div>
-
             <div className="space-y-3">
               {filtreYikayicilar.map((y) => (
                 <div key={y.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -326,43 +331,21 @@ export default function AdminPanel() {
                         {y.ad} <Badge durum={y.durum} />
                       </p>
                       <p className="text-xs text-slate-400">{y.email} · {y.telefon}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        📍 {y.bolge} · ✅ {y.tamamlanan} sipariş · ⭐ {y.puan}
-                      </p>
+                      <p className="text-xs text-slate-400 mt-0.5">📍 {y.bolge} · ✅ {y.tamamlanan} sipariş · ⭐ {y.puan}</p>
                     </div>
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {y.durum === "beklemede" && (
                       <>
-                        <button
-                          onClick={() => yikayiciGuncelle(y.id, "aktif")}
-                          className="text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition"
-                        >
-                          ✓ Onayla
-                        </button>
-                        <button
-                          onClick={() => yikayiciGuncelle(y.id, "reddedildi")}
-                          className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-xl font-semibold transition"
-                        >
-                          ✕ Reddet
-                        </button>
+                        <button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition">✓ Onayla</button>
+                        <button onClick={() => yikayiciGuncelle(y.id, "reddedildi")} className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-xl font-semibold transition">✕ Reddet</button>
                       </>
                     )}
                     {y.durum === "aktif" && (
-                      <button
-                        onClick={() => yikayiciGuncelle(y.id, "beklemede")}
-                        className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-xl font-semibold transition"
-                      >
-                        Askıya Al
-                      </button>
+                      <button onClick={() => yikayiciGuncelle(y.id, "beklemede")} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-xl font-semibold transition">Askıya Al</button>
                     )}
                     {y.durum === "reddedildi" && (
-                      <button
-                        onClick={() => yikayiciGuncelle(y.id, "aktif")}
-                        className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-600 px-4 py-2 rounded-xl font-semibold transition"
-                      >
-                        Tekrar Onayla
-                      </button>
+                      <button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-600 px-4 py-2 rounded-xl font-semibold transition">Tekrar Onayla</button>
                     )}
                   </div>
                 </div>
@@ -371,9 +354,7 @@ export default function AdminPanel() {
           </div>
         )}
 
-        {/* ══════════════════════════════
-            KULLANICILAR
-        ══════════════════════════════ */}
+        {/* KULLANICILAR */}
         {aktifSekme === "kullanicilar" && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -386,15 +367,12 @@ export default function AdminPanel() {
                 className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64"
               />
             </div>
-
             <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
                     {["Kullanıcı", "E-posta", "Telefon", "Kayıt", "Sipariş", "Durum", "İşlem"].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                        {h}
-                      </th>
+                      <th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -416,19 +394,9 @@ export default function AdminPanel() {
                       <td className="px-4 py-3"><Badge durum={k.durum} /></td>
                       <td className="px-4 py-3">
                         {k.durum === "aktif" ? (
-                          <button
-                            onClick={() => kullaniciGuncelle(k.id, "engellendi")}
-                            className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg font-semibold transition"
-                          >
-                            Engelle
-                          </button>
+                          <button onClick={() => kullaniciGuncelle(k.id, "engellendi")} className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg font-semibold transition">Engelle</button>
                         ) : (
-                          <button
-                            onClick={() => kullaniciGuncelle(k.id, "aktif")}
-                            className="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1.5 rounded-lg font-semibold transition"
-                          >
-                            Aktifleştir
-                          </button>
+                          <button onClick={() => kullaniciGuncelle(k.id, "aktif")} className="text-xs bg-green-100 hover:bg-green-200 text-green-700 px-3 py-1.5 rounded-lg font-semibold transition">Aktifleştir</button>
                         )}
                       </td>
                     </tr>
