@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const hizmetler = [
@@ -10,6 +11,7 @@ const hizmetler = [
 ];
 
 export default function SiparisPage() {
+  const router = useRouter();
   const [adim, setAdim] = useState(1);
   const [form, setForm] = useState({
     adres: "",
@@ -133,7 +135,6 @@ export default function SiparisPage() {
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Araç Bilgisi</h2>
               <p className="text-gray-500 text-sm mb-5">Aracınızın bilgilerini girin</p>
-
               <div className="mb-3">
                 <label className="text-sm text-gray-600 block mb-1">Plaka</label>
                 <input
@@ -144,7 +145,6 @@ export default function SiparisPage() {
                   className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400"
                 />
               </div>
-
               <div className="mb-3">
                 <label className="text-sm text-gray-600 block mb-1">Araç Fotoğrafı</label>
                 <label className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-xl p-6 text-center hover:border-blue-300 transition-colors cursor-pointer">
@@ -164,7 +164,6 @@ export default function SiparisPage() {
                   />
                 </label>
               </div>
-
               <div className="mb-5">
                 <label className="text-sm text-gray-600 block mb-1">Not (isteğe bağlı)</label>
                 <textarea
@@ -175,7 +174,6 @@ export default function SiparisPage() {
                   className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400 resize-none"
                 />
               </div>
-
               <div className="flex gap-3">
                 <button onClick={() => setAdim(2)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
                 <button onClick={() => { if (form.plaka) setAdim(4); }} disabled={!form.plaka} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-40">Devam Et →</button>
@@ -220,7 +218,7 @@ export default function SiparisPage() {
               </div>
               <div className="flex gap-3">
                 <button onClick={() => setAdim(3)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
-                <button onClick={() => alert("Sipariş alındı! Yakında sizi arayacağız.")} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Siparişi Onayla ✓</button>
+                <button onClick={() => router.push("/siparis-alindi")} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Siparişi Onayla ✓</button>
               </div>
             </>
           )}
