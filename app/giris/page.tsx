@@ -2,25 +2,45 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 export default function GirisPage() {
+  const router = useRouter();
   const [form, setForm] = useState({ email: "", sifre: "" });
   const [hata, setHata] = useState("");
+  const [yukleniyor, setYukleniyor] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.email || !form.sifre) {
       setHata("Lütfen tüm alanları doldurun.");
       return;
     }
+
     setHata("");
-    alert("Giriş başarılı!");
+    setYukleniyor(true);
+
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email: form.email,
+      password: form.sifre,
+    });
+
+    if (error) {
+      setHata("E-posta veya şifre hatalı. Lütfen tekrar deneyin.");
+      setYukleniyor(false);
+      return;
+    }
+
+    setYukleniyor(false);
+    router.push("/hesabim");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
+        <Link href="/" className="text-blue-600 font-bold text-xl">💧 mobilotoyıkama.com</Link>
         <Link href="/kayit" className="text-gray-600 text-sm hover:text-blue-600">Hesabın yok mu? Kayıt ol</Link>
       </header>
 
@@ -60,9 +80,10 @@ export default function GirisPage() {
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            disabled={yukleniyor}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Giriş Yap
+            {yukleniyor ? "Giriş yapılıyor..." : "Giriş Yap"}
           </button>
 
           <div className="relative my-5">

@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase";
 
 export default function KayitPage() {
+  const router = useRouter();
   const [form, setForm] = useState({
     ad: "",
     soyad: "",
@@ -13,8 +16,9 @@ export default function KayitPage() {
     sifreTekrar: "",
   });
   const [hata, setHata] = useState("");
+  const [yukleniyor, setYukleniyor] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!form.ad || !form.soyad || !form.email || !form.telefon || !form.sifre) {
       setHata("Lütfen tüm alanları doldurun.");
       return;
@@ -23,15 +27,53 @@ export default function KayitPage() {
       setHata("Şifreler eşleşmiyor.");
       return;
     }
+    if (form.sifre.length < 6) {
+      setHata("Şifre en az 6 karakter olmalıdır.");
+      return;
+    }
+
     setHata("");
-    alert("Kayıt başarılı! Giriş yapabilirsiniz.");
+    setYukleniyor(true);
+
+    const supabase = createClient();
+
+    const { data, error } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.sifre,
+      options: {
+        data: {
+          ad: form.ad,
+          soyad: form.soyad,
+          telefon: form.telefon,
+        },
+      },
+    });
+
+    if (error) {
+      setHata(error.message === "User already registered"
+        ? "Bu e-posta adresi zaten kayıtlı."
+        : "Kayıt sırasında bir hata oluştu. Lütfen tekrar deneyin.");
+      setYukleniyor(false);
+      return;
+    }
+
+    if (data.user) {
+      await supabase.from("kullanicilar").insert({
+        id: data.user.id,
+        ad: form.ad,
+        soyad: form.soyad,
+        telefon: form.telefon,
+      });
+    }
+
+    setYukleniyor(false);
+    router.push("/siparis");
   };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
+        <Link href="/" className="text-blue-600 font-bold text-xl">💧 mobilotoyıkama.com</Link>
         <Link href="/giris" className="text-gray-600 text-sm hover:text-blue-600">Zaten hesabın var mı? Giriş yap</Link>
       </header>
 
@@ -113,9 +155,10 @@ export default function KayitPage() {
 
           <button
             onClick={handleSubmit}
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+            disabled={yukleniyor}
+            className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Kayıt Ol
+            {yukleniyor ? "Kayıt yapılıyor..." : "Kayıt Ol"}
           </button>
 
           <p className="text-xs text-gray-400 text-center mt-4">
