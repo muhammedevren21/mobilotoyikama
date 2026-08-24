@@ -202,18 +202,41 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
-      <footer className="bg-gray-900 text-gray-400 py-10 px-6">
-        <div className="max-w-4xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div>
-            <div className="text-white font-bold text-lg mb-1">💧 mobilotoyıkama.com</div>
-            <p className="text-sm">© 2026 Tüm hakları saklıdır.</p>
+   {/* ── FOOTER ── */}
+      <footer className="bg-gray-900 text-gray-400 py-12 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
+            <div>
+              <div className="text-white font-bold text-lg mb-3">💧 mobilotoyıkama.com</div>
+              <p className="text-sm text-gray-500">Türkiye'nin ilk mobil araç yıkama platformu.</p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold text-sm mb-3">Hizmetler</h4>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link href="/siparis" className="hover:text-white transition">Sipariş Ver</Link>
+                <Link href="/giris" className="hover:text-white transition">Giriş Yap</Link>
+                <Link href="/kayit" className="hover:text-white transition">Kayıt Ol</Link>
+                <Link href="/yikayici-kayit" className="hover:text-white transition">Yıkayıcı Ol</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold text-sm mb-3">Kurumsal</h4>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link href="/hakkimizda" className="hover:text-white transition">Hakkımızda</Link>
+                <Link href="/kariyer" className="hover:text-white transition">Kariyer</Link>
+                <Link href="/iletisim" className="hover:text-white transition">İletişim</Link>
+              </div>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold text-sm mb-3">Yasal</h4>
+              <div className="flex flex-col gap-2 text-sm">
+                <Link href="/kvkk" className="hover:text-white transition">KVKK</Link>
+                <Link href="/sss" className="hover:text-white transition">S.S.S.</Link>
+              </div>
+            </div>
           </div>
-          <div className="flex gap-6 text-sm">
-            <Link href="/giris" className="hover:text-white transition">Giriş Yap</Link>
-            <Link href="/kayit" className="hover:text-white transition">Kayıt Ol</Link>
-            <Link href="/yikayici-kayit" className="hover:text-white transition">Yıkayıcı Ol</Link>
-            <Link href="/siparis" className="hover:text-white transition">Sipariş Ver</Link>
+          <div className="border-t border-gray-800 pt-6 text-center text-sm text-gray-500">
+            © 2026 mobilotoyıkama.com — Tüm hakları saklıdır.
           </div>
         </div>
       </footer>
