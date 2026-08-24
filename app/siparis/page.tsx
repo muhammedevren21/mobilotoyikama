@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase";
 
 const hizmetler = [
   { id: "dis", icon: "🚿", title: "Dış Yıkama", price: 150, desc: "Araç dışı tamamen temizlenir" },
@@ -13,6 +14,8 @@ const hizmetler = [
 export default function SiparisPage() {
   const router = useRouter();
   const [adim, setAdim] = useState(1);
+  const [yukleniyor, setYukleniyor] = useState(false);
+  const [hata, setHata] = useState("");
   const [form, setForm] = useState({
     adres: "",
     adresDetay: "",
@@ -31,11 +34,43 @@ export default function SiparisPage() {
     { no: 4, label: "Özet" },
   ];
 
+  const siparisOnayla = async () => {
+    setYukleniyor(true);
+    setHata("");
+
+    const supabase = createClient();
+
+    const { data: { user } } = await supabase.auth.getUser();
+
+    if (!user) {
+      router.push("/giris");
+      return;
+    }
+
+    const { error } = await supabase.from("siparisler").insert({
+      kullanici_id: user.id,
+      paket: secilenHizmet?.title,
+      adres: form.adresDetay ? `${form.adres} - ${form.adresDetay}` : form.adres,
+      plaka: form.plaka,
+      tutar: secilenHizmet?.price,
+      durum: "beklemede",
+    });
+
+    if (error) {
+      setHata("Sipariş oluşturulurken bir hata oluştu. Lütfen tekrar deneyin.");
+      setYukleniyor(false);
+      return;
+    }
+
+    setYukleniyor(false);
+    router.push("/siparis-alindi");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
+        <Link href="/" className="text-blue-600 font-bold text-xl">💧 mobilotoyıkama.com</Link>
         <span className="text-gray-500 text-sm">Sipariş Ver</span>
       </header>
 
@@ -216,9 +251,18 @@ export default function SiparisPage() {
                   <span className="text-xl font-bold text-blue-600">{secilenHizmet?.price}₺</span>
                 </div>
               </div>
+              {hata && (
+                <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg mb-4">{hata}</div>
+              )}
               <div className="flex gap-3">
                 <button onClick={() => setAdim(3)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
-                <button onClick={() => router.push("/siparis-alindi")} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Siparişi Onayla ✓</button>
+                <button
+                  onClick={siparisOnayla}
+                  disabled={yukleniyor}
+                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {yukleniyor ? "Kaydediliyor..." : "Siparişi Onayla ✓"}
+                </button>
               </div>
             </>
           )}
