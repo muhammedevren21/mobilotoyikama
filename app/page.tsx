@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 
-// ─── Geri Sayım ───────────────────────────────────────────────
 function GeriSayim() {
-  const hedef = new Date("2026-09-15T00:00:00");
   const [kalan, setKalan] = useState({ gun: 0, saat: 0, dakika: 0, saniye: 0 });
 
   useEffect(() => {
+    const hedef = new Date("2026-09-15T00:00:00");
     const hesapla = () => {
       const fark = hedef.getTime() - new Date().getTime();
       if (fark <= 0) return;
@@ -58,14 +57,11 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
 
-      {/* ── HEADER ── */}
+      {/* HEADER */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <Link href="/" className="flex items-center gap-2">
-          <<div className="text-blue-600 font-bold text-xl tracking-tight">
-  💧 mobilotoyıkama.com
-</div>
-          <span className="text-blue-600 font-bold text-xl tracking-tight">mobilotoyıkama</span>
-        </Link>
+        <div className="text-blue-600 font-bold text-xl tracking-tight">
+          💧 mobilotoyıkama.com
+        </div>
         <div className="flex gap-3">
           <Link href="/giris" className="text-gray-600 text-sm px-4 py-2 rounded-lg hover:bg-gray-100 transition font-medium">
             Giriş Yap
@@ -76,7 +72,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* ── HERO ── */}
+      {/* HERO */}
       <section className="relative bg-gradient-to-br from-blue-700 via-blue-600 to-blue-500 text-white py-24 px-6 text-center overflow-hidden">
         <div className="absolute top-[-80px] left-[-80px] w-72 h-72 bg-white/5 rounded-full" />
         <div className="absolute bottom-[-60px] right-[-60px] w-96 h-96 bg-white/5 rounded-full" />
@@ -102,7 +98,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── ERKEN KAYIT ── */}
+      {/* ERKEN KAYIT */}
       <section className="bg-gradient-to-br from-blue-900 to-blue-700 text-white py-16 px-6">
         <div className="max-w-3xl mx-auto text-center">
           <span className="inline-block bg-amber-400 text-amber-900 text-xs font-bold px-4 py-1.5 rounded-full mb-4 tracking-wide uppercase">
@@ -112,14 +108,10 @@ export default function Home() {
           <p className="text-blue-200 text-lg mb-8">
             Lansman öncesi kaydolan ilk 500 kullanıcıya özel ayrıcalıklar sizi bekliyor.
           </p>
-
-          {/* Geri Sayım */}
           <div className="mb-10">
             <p className="text-blue-300 text-sm mb-4">15 Eylül 2026&apos;ya kalan süre:</p>
             <GeriSayim />
           </div>
-
-          {/* Avantajlar */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             {[
               { icon: "🎁", baslik: "İlk Yıkama Bedava", desc: "İlk siparişinizde standart dış yıkama ücretsiz" },
@@ -133,8 +125,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-
-          {/* Kayıt Formu */}
           {!kayitOldu ? (
             <form onSubmit={handleErkenKayit} className="max-w-md mx-auto">
               <div className="flex gap-2 bg-white/10 backdrop-blur rounded-2xl p-2">
@@ -157,14 +147,13 @@ export default function Home() {
               <p className="text-green-400 text-sm mt-1">Lansman günü sizi bilgilendireceğiz.</p>
             </div>
           )}
-
           <p className="text-blue-400 text-xs mt-6">
             Şimdiye kadar <span className="text-white font-bold">312</span> kişi erken kaydoldu. Siz de katılın!
           </p>
         </div>
       </section>
 
-      {/* ── İSTATİSTİKLER ── */}
+      {/* İSTATİSTİKLER */}
       <section className="bg-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 py-10 grid grid-cols-2 sm:grid-cols-4 gap-6 text-center">
           {[
@@ -181,7 +170,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── HİZMETLER ── */}
+      {/* HİZMETLER */}
       <section className="py-20 px-6 max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest">Paketler</span>
@@ -215,7 +204,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── NASIL ÇALIŞIR ── */}
+      {/* NASIL ÇALIŞIR */}
       <section className="bg-slate-50 py-20 px-6">
         <div className="text-center mb-12">
           <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest">Süreç</span>
@@ -239,7 +228,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── MÜŞTERİ YORUMLARI ── */}
+      {/* MÜŞTERİ YORUMLARI */}
       <section className="py-20 px-6 max-w-4xl mx-auto">
         <div className="text-center mb-12">
           <span className="text-blue-600 text-sm font-semibold uppercase tracking-widest">Yorumlar</span>
@@ -266,7 +255,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── YIKAYICI OL ── */}
+      {/* YIKAYICI OL */}
       <section className="bg-gradient-to-br from-slate-800 to-slate-900 text-white py-20 px-6 text-center">
         <div className="max-w-2xl mx-auto">
           <span className="text-4xl mb-4 block">🧹</span>
@@ -283,17 +272,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
       <footer className="bg-gray-900 text-gray-400 py-12 px-6">
         <div className="max-w-4xl mx-auto">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 mb-10">
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 2C12 2 5 9.5 5 14.5C5 18.09 8.13 21 12 21C15.87 21 19 18.09 19 14.5C19 9.5 12 2 12 2Z" fill="white"/></svg>
-                </div>
-                <span className="text-white font-bold">mobilotoyıkama</span>
-              </div>
+              <div className="text-white font-bold text-lg mb-3">💧 mobilotoyıkama.com</div>
               <p className="text-sm text-gray-500">Türkiye&apos;nin ilk mobil araç yıkama platformu.</p>
             </div>
             <div>
