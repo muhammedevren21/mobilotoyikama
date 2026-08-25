@@ -43,6 +43,36 @@ function GeriSayim() {
   );
 }
 
+const kartlar = [
+  {
+    baslik: "İlk Yıkama Bedava",
+    desc: "İlk siparişinizde standart dış yıkama ücretsiz",
+    svg: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
+      </svg>
+    ),
+  },
+  {
+    baslik: "Öncelikli Hizmet",
+    desc: "Erken kayıt üyelerine öncelikli yıkayıcı ataması",
+    svg: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    ),
+  },
+  {
+    baslik: "%20 Sürekli İndirim",
+    desc: "Tüm paketlerde ömür boyu %20 erken üye indirimi",
+    svg: (
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>
+      </svg>
+    ),
+  },
+];
+
 export default function Home() {
   const [email, setEmail] = useState("");
   const [kayitOldu, setKayitOldu] = useState(false);
@@ -112,21 +142,21 @@ export default function Home() {
             <p className="text-blue-300 text-sm mb-4">15 Eylül 2026&apos;ya kalan süre:</p>
             <GeriSayim />
           </div>
+
+          {/* KARTLAR */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-            {[
-              { icon: "🎁", baslik: "İlk Yıkama Bedava", desc: "İlk siparişinizde standart dış yıkama ücretsiz", gradient: "from-violet-500 to-purple-600" },
-              { icon: "⚡", baslik: "Öncelikli Hizmet", desc: "Erken kayıt üyelerine öncelikli yıkayıcı ataması", gradient: "from-amber-400 to-orange-500" },
-              { icon: "💰", baslik: "%20 Sürekli İndirim", desc: "Tüm paketlerde ömür boyu %20 erken üye indirimi", gradient: "from-emerald-400 to-teal-500" },
-            ].map((item) => (
-              <div key={item.baslik} className={`bg-gradient-to-br ${item.gradient} rounded-2xl p-6 text-left shadow-xl`}>
-                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl mb-4 shadow-inner">
-                  {item.icon}
+            {kartlar.map((item) => (
+              <div key={item.baslik} className="bg-white/15 backdrop-blur-md border border-white/25 rounded-2xl p-6 text-left shadow-xl hover:bg-white/20 transition group">
+                <div className="w-14 h-14 bg-white/25 border border-white/40 rounded-2xl flex items-center justify-center mb-5 shadow-inner group-hover:bg-white/30 transition">
+                  {item.svg}
                 </div>
                 <h3 className="font-bold text-white text-lg mb-2">{item.baslik}</h3>
-                <p className="text-white/80 text-sm leading-relaxed">{item.desc}</p>
+                <div className="w-8 h-0.5 bg-white/40 mb-3 rounded-full" />
+                <p className="text-white/75 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
+
           {!kayitOldu ? (
             <form onSubmit={handleErkenKayit} className="max-w-md mx-auto">
               <div className="flex gap-2 bg-white/10 backdrop-blur rounded-2xl p-2">
