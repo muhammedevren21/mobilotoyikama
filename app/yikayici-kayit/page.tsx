@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase";
 
 export default function YikayiciKayitPage() {
   const router = useRouter();
   const [adim, setAdim] = useState(1);
+  const [yukleniyor, setYukleniyor] = useState(false);
   const [form, setForm] = useState({
     ad: "",
     soyad: "",
@@ -29,11 +31,63 @@ export default function YikayiciKayitPage() {
 
   const iller = ["İstanbul", "Ankara", "İzmir", "Bursa", "Antalya", "Adana", "Konya", "Gaziantep", "Mersin", "Kayseri"];
 
+  const handleBasvur = async () => {
+    if (!form.aracPlaka || !form.tcNo || !form.iban) {
+      setHata("Lütfen tüm alanları doldurun.");
+      return;
+    }
+    setHata("");
+    setYukleniyor(true);
+
+    const supabase = createClient();
+
+    // 1. Auth kaydı oluştur
+    const { data, error: authError } = await supabase.auth.signUp({
+      email: form.email,
+      password: form.sifre,
+      options: {
+        data: { ad: form.ad, soyad: form.soyad, telefon: form.telefon },
+      },
+    });
+
+    if (authError) {
+      setHata(
+        authError.message === "User already registered"
+          ? "Bu e-posta adresi zaten kayıtlı."
+          : "Kayıt sırasında hata oluştu. Lütfen tekrar deneyin."
+      );
+      setYukleniyor(false);
+      return;
+    }
+
+    // 2. Yıkayıcılar tablosuna ekle
+    if (data.user) {
+      const { error: dbError } = await supabase.from("yikayicilar").insert({
+        kullanici_id: data.user.id,
+        ad: form.ad,
+        soyad: form.soyad,
+        telefon: form.telefon,
+        bolge: `${form.ilce}, ${form.il}`,
+        durum: "beklemede",
+        puan: 0,
+      });
+
+      if (dbError) {
+        setHata("Başvuru kaydedilirken hata oluştu. Lütfen tekrar deneyin.");
+        setYukleniyor(false);
+        return;
+      }
+    }
+
+    setYukleniyor(false);
+    router.push("/basvuru-alindi");
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex justify-between items-center">
-        <Link href="/" className="text-blue-600 font-bold text-xl">mobilotoyıkama.com</Link>
+        <Link href="/" className="text-blue-600 font-bold text-xl">💧 mobilotoyıkama.com</Link>
         <Link href="/giris" className="text-gray-600 text-sm hover:text-blue-600">Zaten hesabın var mı? Giriş yap</Link>
       </header>
 
@@ -89,7 +143,23 @@ export default function YikayiciKayitPage() {
                 <input type="password" value={form.sifre} onChange={(e) => setForm({ ...form, sifre: e.target.value })} placeholder="En az 6 karakter" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400" />
               </div>
               {hata && <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg mb-4">{hata}</div>}
-              <button onClick={() => { if (!form.ad || !form.soyad || !form.email || !form.telefon || !form.sifre) { setHata("Lütfen tüm alanları doldurun."); return; } setHata(""); setAdim(2); }} className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">Devam Et →</button>
+              <button
+                onClick={() => {
+                  if (!form.ad || !form.soyad || !form.email || !form.telefon || !form.sifre) {
+                    setHata("Lütfen tüm alanları doldurun.");
+                    return;
+                  }
+                  if (form.sifre.length < 6) {
+                    setHata("Şifre en az 6 karakter olmalıdır.");
+                    return;
+                  }
+                  setHata("");
+                  setAdim(2);
+                }}
+                className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                Devam Et →
+              </button>
             </>
           )}
 
@@ -114,7 +184,16 @@ export default function YikayiciKayitPage() {
               {hata && <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg mb-3">{hata}</div>}
               <div className="flex gap-3">
                 <button onClick={() => setAdim(1)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
-                <button onClick={() => { if (!form.il || !form.ilce) { setHata("Lütfen il ve ilçe seçin."); return; } setHata(""); setAdim(3); }} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Devam Et →</button>
+                <button
+                  onClick={() => {
+                    if (!form.il || !form.ilce) { setHata("Lütfen il ve ilçe seçin."); return; }
+                    setHata("");
+                    setAdim(3);
+                  }}
+                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700"
+                >
+                  Devam Et →
+                </button>
               </div>
             </>
           )}
@@ -122,7 +201,7 @@ export default function YikayiciKayitPage() {
           {adim === 3 && (
             <>
               <h2 className="text-xl font-bold text-gray-800 mb-1">Araç & Ödeme Bilgileri</h2>
-              <p className="text-gray-500 text-sm mb-5">Kazancınız doğrudan IBAN'ınıza aktarılır</p>
+              <p className="text-gray-500 text-sm mb-5">Kazancınız doğrudan IBAN&apos;ınıza aktarılır</p>
               <div className="mb-3">
                 <label className="text-sm text-gray-600 block mb-1">Araç Plakası</label>
                 <input type="text" value={form.aracPlaka} onChange={(e) => setForm({ ...form, aracPlaka: e.target.value.toUpperCase() })} placeholder="34 ABC 123" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-400" />
@@ -141,7 +220,13 @@ export default function YikayiciKayitPage() {
               {hata && <div className="bg-red-50 text-red-600 text-sm px-3 py-2 rounded-lg mb-4">{hata}</div>}
               <div className="flex gap-3">
                 <button onClick={() => setAdim(2)} className="flex-1 border border-gray-200 text-gray-600 py-3 rounded-lg font-medium hover:bg-gray-50">← Geri</button>
-                <button onClick={() => { if (!form.aracPlaka || !form.tcNo || !form.iban) { setHata("Lütfen tüm alanları doldurun."); return; } setHata(""); router.push("/basvuru-alindi"); }} className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700">Başvur ✓</button>
+                <button
+                  onClick={handleBasvur}
+                  disabled={yukleniyor}
+                  className="flex-1 bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {yukleniyor ? "Kaydediliyor..." : "Başvur ✓"}
+                </button>
               </div>
             </>
           )}
