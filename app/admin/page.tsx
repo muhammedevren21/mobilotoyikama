@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase";
 
+const ADMIN_SIFRE = "Mobil2026!";
+
 interface Siparis {
   id: string;
   kullanici_id: string;
@@ -71,6 +73,9 @@ function StatKart({ label, deger, icon, renk }: { label: string; deger: string |
 }
 
 export default function AdminPanel() {
+  const [girisYapildi, setGirisYapildi] = useState(false);
+  const [sifre, setSifre] = useState("");
+  const [sifreHata, setSifreHata] = useState("");
   const [aktifSekme, setAktifSekme] = useState("dashboard");
   const [siparisler, setSiparisler] = useState<Siparis[]>([]);
   const [yikayicilar, setYikayicilar] = useState<Yikayici[]>([]);
@@ -83,8 +88,8 @@ export default function AdminPanel() {
   const supabase = createClient();
 
   useEffect(() => {
-    veriCek();
-  }, []);
+    if (girisYapildi) veriCek();
+  }, [girisYapildi]);
 
   const veriCek = async () => {
     setYukleniyor(true);
@@ -109,6 +114,15 @@ export default function AdminPanel() {
     setYikayicilar((prev) => prev.map((y) => y.id === id ? { ...y, durum: yeniDurum } : y));
   };
 
+  const handleGiris = () => {
+    if (sifre === ADMIN_SIFRE) {
+      setGirisYapildi(true);
+      setSifreHata("");
+    } else {
+      setSifreHata("Şifre hatalı.");
+    }
+  };
+
   const toplamGelir = siparisler.filter((s) => s.durum === "tamamlandi").reduce((acc, s) => acc + (s.tutar || 0), 0);
   const filtreSiparisler = siparisler.filter((s) => s.id.toLowerCase().includes(aramaS.toLowerCase()) || s.paket?.toLowerCase().includes(aramaS.toLowerCase()));
   const filtreYikayicilar = yikayicilar.filter((y) => `${y.ad} ${y.soyad}`.toLowerCase().includes(aramaY.toLowerCase()));
@@ -120,6 +134,39 @@ export default function AdminPanel() {
     { id: "yikayicilar", label: "Yıkayıcılar", icon: "🧹" },
     { id: "kullanicilar", label: "Kullanıcılar", icon: "👥" },
   ];
+
+  // ── Giriş Ekranı ──
+  if (!girisYapildi) {
+    return (
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
+        <div className="bg-slate-800 rounded-2xl p-8 w-full max-w-sm shadow-2xl">
+          <div className="text-center mb-6">
+            <div className="text-4xl mb-2">💧</div>
+            <h1 className="text-white font-bold text-xl">Admin Girişi</h1>
+            <p className="text-slate-400 text-sm mt-1">mobilotoyıkama.com</p>
+          </div>
+          <div className="mb-4">
+            <label className="block text-slate-400 text-xs font-semibold mb-2 uppercase tracking-wide">Şifre</label>
+            <input
+              type="password"
+              value={sifre}
+              onChange={(e) => setSifre(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleGiris()}
+              placeholder="Admin şifresi"
+              className="w-full bg-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500"
+            />
+          </div>
+          {sifreHata && <p className="text-red-400 text-xs mb-3">{sifreHata}</p>}
+          <button
+            onClick={handleGiris}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition text-sm"
+          >
+            Giriş Yap
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (yukleniyor) {
     return (
@@ -138,7 +185,7 @@ export default function AdminPanel() {
         </div>
         <div className="flex items-center gap-4">
           <a href="/" className="text-slate-400 hover:text-white text-sm transition">Siteye Dön ↗</a>
-          <button className="text-red-400 hover:text-red-300 text-sm font-medium transition">Çıkış</button>
+          <button onClick={() => setGirisYapildi(false)} className="text-red-400 hover:text-red-300 text-sm font-medium transition">Çıkış</button>
         </div>
       </nav>
 
