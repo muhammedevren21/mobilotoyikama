@@ -61,11 +61,9 @@ export default function Home() {
       {/* ── HEADER ── */}
       <header className="bg-white/80 backdrop-blur-md border-b border-gray-100 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center shadow-sm">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C12 2 5 9.5 5 14.5C5 18.09 8.13 21 12 21C15.87 21 19 18.09 19 14.5C19 9.5 12 2 12 2Z" fill="white"/>
-            </svg>
-          </div>
+          <<div className="text-blue-600 font-bold text-xl tracking-tight">
+  💧 mobilotoyıkama.com
+</div>
           <span className="text-blue-600 font-bold text-xl tracking-tight">mobilotoyıkama</span>
         </Link>
         <div className="flex gap-3">
