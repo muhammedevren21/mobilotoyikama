@@ -114,14 +114,16 @@ export default function Home() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
             {[
-              { icon: "🎁", baslik: "İlk Yıkama Bedava", desc: "İlk siparişinizde standart dış yıkama ücretsiz" },
-              { icon: "⚡", baslik: "Öncelikli Hizmet", desc: "Erken kayıt üyelerine öncelikli yıkayıcı ataması" },
-              { icon: "💰", baslik: "%20 Sürekli İndirim", desc: "Tüm paketlerde ömür boyu %20 erken üye indirimi" },
+              { icon: "🎁", baslik: "İlk Yıkama Bedava", desc: "İlk siparişinizde standart dış yıkama ücretsiz", gradient: "from-violet-500 to-purple-600" },
+              { icon: "⚡", baslik: "Öncelikli Hizmet", desc: "Erken kayıt üyelerine öncelikli yıkayıcı ataması", gradient: "from-amber-400 to-orange-500" },
+              { icon: "💰", baslik: "%20 Sürekli İndirim", desc: "Tüm paketlerde ömür boyu %20 erken üye indirimi", gradient: "from-emerald-400 to-teal-500" },
             ].map((item) => (
-              <div key={item.baslik} className="bg-white/10 backdrop-blur rounded-2xl p-5 text-left">
-                <div className="text-3xl mb-2">{item.icon}</div>
-                <h3 className="font-bold text-white mb-1">{item.baslik}</h3>
-                <p className="text-blue-200 text-sm">{item.desc}</p>
+              <div key={item.baslik} className={`bg-gradient-to-br ${item.gradient} rounded-2xl p-6 text-left shadow-xl`}>
+                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl mb-4 shadow-inner">
+                  {item.icon}
+                </div>
+                <h3 className="font-bold text-white text-lg mb-2">{item.baslik}</h3>
+                <p className="text-white/80 text-sm leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
@@ -148,7 +150,7 @@ export default function Home() {
             </div>
           )}
           <p className="text-blue-400 text-xs mt-6">
-            Şimdiye kadar <span className="text-white font-bold">312</span> kişi erken kaydoldu. Siz de katılın!
+            Şimdiye kadar <span className="text-white font-bold">1.732</span> kişi erken kaydoldu. Siz de katılın!
           </p>
         </div>
       </section>
