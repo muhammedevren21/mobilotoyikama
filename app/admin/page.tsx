@@ -1,358 +1,159 @@
-"use client";
-
-import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabase";
-
-const ADMIN_SIFRE = "Mobil2026!";
-
-interface Siparis {
-  id: string;
-  kullanici_id: string;
-  paket: string;
-  adres: string;
-  plaka: string;
-  tutar: number;
-  durum: string;
-  created_at: string;
-}
-
-interface Yikayici {
-  id: string;
-  ad: string;
-  soyad: string;
-  telefon: string;
-  bolge: string;
-  durum: string;
-  puan: number;
-}
-
-interface Kullanici {
-  id: string;
-  ad: string;
-  soyad: string;
-  telefon: string;
-  created_at: string;
-}
-
-function Badge({ durum }: { durum: string }) {
-  const map: Record<string, string> = {
-    beklemede: "bg-amber-100 text-amber-700",
-    aktif: "bg-blue-100 text-blue-700",
-    tamamlandi: "bg-green-100 text-green-700",
-    iptal: "bg-red-100 text-red-600",
-    reddedildi: "bg-red-100 text-red-600",
-  };
-  const etiket: Record<string, string> = {
-    beklemede: "Beklemede",
-    aktif: "Aktif",
-    tamamlandi: "Tamamlandı",
-    iptal: "İptal",
-    reddedildi: "Reddedildi",
-  };
+export default function Home() {
   return (
-    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${map[durum] || "bg-gray-100 text-gray-500"}`}>
-      {etiket[durum] || durum}
-    </span>
-  );
-}
+    <div className="min-h-screen bg-gray-100">
+      {/* HEADER */}
+      <header className="bg-orange-500">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center gap-4 py-3">
+            {/* Logo */}
+            <div className="text-white text-2xl font-bold whitespace-nowrap">
+              ucuzuygun.com
+            </div>
 
-function StatKart({ label, deger, icon, renk }: { label: string; deger: string | number; icon: string; renk: string }) {
-  const renkMap: Record<string, string> = {
-    blue: "from-blue-600 to-blue-500",
-    green: "from-emerald-600 to-emerald-500",
-    purple: "from-violet-600 to-violet-500",
-    orange: "from-orange-500 to-amber-400",
-  };
-  return (
-    <div className={`bg-gradient-to-br ${renkMap[renk]} text-white rounded-2xl p-5 shadow-md`}>
-      <div className="text-3xl mb-2">{icon}</div>
-      <div className="text-2xl font-bold">{deger}</div>
-      <div className="text-sm opacity-80 mt-0.5">{label}</div>
-    </div>
-  );
-}
+            {/* Arama */}
+            <div className="flex flex-1">
+              <input
+                type="text"
+                placeholder="Ürün, marka veya kategori ara..."
+                className="flex-1 px-4 py-2 rounded-l-md outline-none text-gray-800"
+              />
+              <button className="bg-yellow-400 px-4 py-2 rounded-r-md font-bold text-gray-800">
+                Ara
+              </button>
+            </div>
 
-export default function AdminPanel() {
-  const [girisYapildi, setGirisYapildi] = useState(false);
-  const [sifre, setSifre] = useState("");
-  const [sifreHata, setSifreHata] = useState("");
-  const [aktifSekme, setAktifSekme] = useState("dashboard");
-  const [siparisler, setSiparisler] = useState<Siparis[]>([]);
-  const [yikayicilar, setYikayicilar] = useState<Yikayici[]>([]);
-  const [kullanicilar, setKullanicilar] = useState<Kullanici[]>([]);
-  const [yukleniyor, setYukleniyor] = useState(true);
-  const [aramaS, setAramaS] = useState("");
-  const [aramaY, setAramaY] = useState("");
-  const [aramaK, setAramaK] = useState("");
-
-  const supabase = createClient();
-
-  useEffect(() => {
-    if (girisYapildi) veriCek();
-  }, [girisYapildi]);
-
-  const veriCek = async () => {
-    setYukleniyor(true);
-    const [{ data: sp }, { data: yi }, { data: ku }] = await Promise.all([
-      supabase.from("siparisler").select("*").order("created_at", { ascending: false }),
-      supabase.from("yikayicilar").select("*").order("created_at", { ascending: false }),
-      supabase.from("kullanicilar").select("*").order("created_at", { ascending: false }),
-    ]);
-    if (sp) setSiparisler(sp);
-    if (yi) setYikayicilar(yi);
-    if (ku) setKullanicilar(ku);
-    setYukleniyor(false);
-  };
-
-  const siparisGuncelle = async (id: string, yeniDurum: string) => {
-    await supabase.from("siparisler").update({ durum: yeniDurum }).eq("id", id);
-    setSiparisler((prev) => prev.map((s) => s.id === id ? { ...s, durum: yeniDurum } : s));
-  };
-
-  const yikayiciGuncelle = async (id: string, yeniDurum: string) => {
-    await supabase.from("yikayicilar").update({ durum: yeniDurum }).eq("id", id);
-    setYikayicilar((prev) => prev.map((y) => y.id === id ? { ...y, durum: yeniDurum } : y));
-  };
-
-  const handleGiris = () => {
-    if (sifre === ADMIN_SIFRE) {
-      setGirisYapildi(true);
-      setSifreHata("");
-    } else {
-      setSifreHata("Şifre hatalı.");
-    }
-  };
-
-  const toplamGelir = siparisler.filter((s) => s.durum === "tamamlandi").reduce((acc, s) => acc + (s.tutar || 0), 0);
-  const filtreSiparisler = siparisler.filter((s) => s.id.toLowerCase().includes(aramaS.toLowerCase()) || s.paket?.toLowerCase().includes(aramaS.toLowerCase()));
-  const filtreYikayicilar = yikayicilar.filter((y) => `${y.ad} ${y.soyad}`.toLowerCase().includes(aramaY.toLowerCase()));
-  const filtreKullanicilar = kullanicilar.filter((k) => `${k.ad} ${k.soyad}`.toLowerCase().includes(aramaK.toLowerCase()));
-
-  const sekmeler = [
-    { id: "dashboard", label: "Dashboard", icon: "📊" },
-    { id: "siparisler", label: "Siparişler", icon: "📦" },
-    { id: "yikayicilar", label: "Yıkayıcılar", icon: "🧹" },
-    { id: "kullanicilar", label: "Kullanıcılar", icon: "👥" },
-  ];
-
-  // ── Giriş Ekranı ──
-  if (!girisYapildi) {
-    return (
-      <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4">
-        <div className="bg-slate-800 rounded-2xl p-8 w-full max-w-sm shadow-2xl">
-          <div className="text-center mb-6">
-            <div className="text-4xl mb-2">💧</div>
-            <h1 className="text-white font-bold text-xl">Admin Girişi</h1>
-            <p className="text-slate-400 text-sm mt-1">mobilotoyıkama.com</p>
+            {/* İkonlar */}
+            <div className="flex gap-6 text-white text-sm">
+              <button className="flex flex-col items-center">
+                <span className="text-xl">♡</span>
+                <span>Favoriler</span>
+              </button>
+              <button className="flex flex-col items-center">
+                <span className="text-xl">🛒</span>
+                <span>Sepet</span>
+              </button>
+              <button className="flex flex-col items-center">
+                <span className="text-xl">👤</span>
+                <span>Hesabım</span>
+              </button>
+            </div>
           </div>
-          <div className="mb-4">
-            <label className="block text-slate-400 text-xs font-semibold mb-2 uppercase tracking-wide">Şifre</label>
-            <input
-              type="password"
-              value={sifre}
-              onChange={(e) => setSifre(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleGiris()}
-              placeholder="Admin şifresi"
-              className="w-full bg-slate-700 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-500"
-            />
-          </div>
-          {sifreHata && <p className="text-red-400 text-xs mb-3">{sifreHata}</p>}
-          <button
-            onClick={handleGiris}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition text-sm"
-          >
-            Giriş Yap
+
+          {/* Kategori Menüsü */}
+          <nav className="flex gap-1 overflow-x-auto pb-1">
+            {["Elektronik", "Giyim", "Ev & Yaşam", "Kozmetik", "Spor", "Kitap", "Oyuncak", "Süpermarket", "Tüm Kategoriler"].map((cat) => (
+              <button
+                key={cat}
+                className="text-white text-xs px-3 py-2 whitespace-nowrap hover:bg-orange-600 rounded"
+              >
+                {cat}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </header>
+
+      {/* BANNER */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-300 py-12 px-8">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-white text-3xl font-bold mb-2">Yaz indirimi başladı!</h2>
+          <p className="text-white mb-4">Binlerce üründe %70&apos;e varan indirim</p>
+          <button className="bg-white text-orange-500 font-bold px-6 py-2 rounded">
+            Şimdi Keşfet
           </button>
         </div>
       </div>
-    );
-  }
 
-  if (yukleniyor) {
-    return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
-        <div className="text-slate-500 text-sm">Yükleniyor...</div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <nav className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between shadow-lg">
-        <div className="flex items-center gap-3">
-          <span className="text-xl font-bold tracking-tight">💧 mobilotoyıkama</span>
-          <span className="text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full font-semibold">ADMIN</span>
+      {/* KATEGORİLER */}
+      <div className="max-w-7xl mx-auto px-4 py-6">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Kategoriler</h3>
+          <button className="text-orange-500 text-sm">Tümü →</button>
         </div>
-        <div className="flex items-center gap-4">
-          <a href="/" className="text-slate-400 hover:text-white text-sm transition">Siteye Dön ↗</a>
-          <button onClick={() => setGirisYapildi(false)} className="text-red-400 hover:text-red-300 text-sm font-medium transition">Çıkış</button>
-        </div>
-      </nav>
-
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex gap-2 mb-8 overflow-x-auto pb-1">
-          {sekmeler.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => setAktifSekme(s.id)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all ${
-                aktifSekme === s.id ? "bg-slate-900 text-white shadow-md" : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-              }`}
-            >
-              {s.icon} {s.label}
-            </button>
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {[
+            { icon: "📱", label: "Elektronik" },
+            { icon: "👗", label: "Giyim" },
+            { icon: "🏠", label: "Ev & Yaşam" },
+            { icon: "💄", label: "Kozmetik" },
+            { icon: "⚽", label: "Spor" },
+            { icon: "📚", label: "Kitap" },
+            { icon: "🧸", label: "Oyuncak" },
+            { icon: "🥗", label: "Market" },
+          ].map((cat) => (
+            <div key={cat.label} className="flex flex-col items-center gap-2 min-w-16 cursor-pointer">
+              <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center text-2xl">
+                {cat.icon}
+              </div>
+              <span className="text-xs text-gray-600 text-center">{cat.label}</span>
+            </div>
           ))}
         </div>
-
-        {aktifSekme === "dashboard" && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <StatKart label="Toplam Sipariş" deger={siparisler.length} icon="📦" renk="blue" />
-              <StatKart label="Aktif Yıkayıcı" deger={yikayicilar.filter(y => y.durum === "aktif").length} icon="🧹" renk="green" />
-              <StatKart label="Kayıtlı Kullanıcı" deger={kullanicilar.length} icon="👥" renk="purple" />
-              <StatKart label="Toplam Gelir" deger={`₺${toplamGelir}`} icon="💰" renk="orange" />
-            </div>
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
-                <h2 className="font-bold text-slate-800">Son Siparişler</h2>
-                <button onClick={() => setAktifSekme("siparisler")} className="text-blue-600 text-sm font-medium hover:underline">Tümünü gör →</button>
-              </div>
-              <div className="divide-y divide-slate-50">
-                {siparisler.slice(0, 3).map((s) => (
-                  <div key={s.id} className="px-6 py-4 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs text-slate-400 font-mono">{s.id.slice(0, 8)}...</span>
-                      <p className="text-sm font-semibold text-slate-800">{s.paket}</p>
-                      <p className="text-xs text-slate-400">{s.plaka} · {new Date(s.created_at).toLocaleDateString("tr-TR")}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="font-bold text-slate-700">₺{s.tutar}</span>
-                      <Badge durum={s.durum} />
-                    </div>
-                  </div>
-                ))}
-                {siparisler.length === 0 && <p className="px-6 py-4 text-sm text-slate-400">Henüz sipariş yok.</p>}
-              </div>
-            </div>
-            <div className="bg-white rounded-2xl border border-amber-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-amber-100 flex items-center justify-between bg-amber-50">
-                <h2 className="font-bold text-amber-800">⏳ Onay Bekleyen Yıkayıcılar</h2>
-                <button onClick={() => setAktifSekme("yikayicilar")} className="text-amber-700 text-sm font-medium hover:underline">Tümünü gör →</button>
-              </div>
-              <div className="divide-y divide-slate-50">
-                {yikayicilar.filter((y) => y.durum === "beklemede").map((y) => (
-                  <div key={y.id} className="px-6 py-4 flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-slate-800">{y.ad} {y.soyad}</p>
-                      <p className="text-xs text-slate-400">{y.bolge} · {y.telefon}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold transition">Onayla</button>
-                      <button onClick={() => yikayiciGuncelle(y.id, "reddedildi")} className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-3 py-1.5 rounded-lg font-semibold transition">Reddet</button>
-                    </div>
-                  </div>
-                ))}
-                {yikayicilar.filter((y) => y.durum === "beklemede").length === 0 && (
-                  <p className="px-6 py-4 text-sm text-slate-400">Bekleyen başvuru yok.</p>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {aktifSekme === "siparisler" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-800">Tüm Siparişler ({siparisler.length})</h2>
-              <input type="text" placeholder="Paket veya id ara..." value={aramaS} onChange={(e) => setAramaS(e.target.value)} className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64" />
-            </div>
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
-                  <tr>{["ID", "Paket", "Adres", "Plaka", "Tarih", "Tutar", "Durum", "İşlem"].map((h) => (<th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>))}</tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filtreSiparisler.map((s) => (
-                    <tr key={s.id} className="hover:bg-slate-50 transition">
-                      <td className="px-4 py-3 font-mono text-xs text-slate-500">{s.id.slice(0, 8)}...</td>
-                      <td className="px-4 py-3 font-medium text-slate-800">{s.paket}</td>
-                      <td className="px-4 py-3 text-slate-500 max-w-xs truncate">{s.adres}</td>
-                      <td className="px-4 py-3 text-slate-600">{s.plaka}</td>
-                      <td className="px-4 py-3 text-slate-500">{new Date(s.created_at).toLocaleDateString("tr-TR")}</td>
-                      <td className="px-4 py-3 font-bold text-slate-800">₺{s.tutar}</td>
-                      <td className="px-4 py-3"><Badge durum={s.durum} /></td>
-                      <td className="px-4 py-3">
-                        <select value={s.durum} onChange={(e) => siparisGuncelle(s.id, e.target.value)} className="text-xs border border-slate-200 rounded-lg px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-400 bg-white">
-                          <option value="beklemede">Beklemede</option>
-                          <option value="aktif">Aktif</option>
-                          <option value="tamamlandi">Tamamlandı</option>
-                          <option value="iptal">İptal</option>
-                        </select>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filtreSiparisler.length === 0 && <p className="text-center text-slate-400 text-sm py-8">Sipariş bulunamadı.</p>}
-            </div>
-          </div>
-        )}
-
-        {aktifSekme === "yikayicilar" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-800">Yıkayıcılar ({yikayicilar.length})</h2>
-              <input type="text" placeholder="İsme göre ara..." value={aramaY} onChange={(e) => setAramaY(e.target.value)} className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64" />
-            </div>
-            <div className="space-y-3">
-              {filtreYikayicilar.length === 0 && <div className="bg-white rounded-2xl border border-slate-100 p-8 text-center text-slate-400 text-sm">Henüz yıkayıcı başvurusu yok.</div>}
-              {filtreYikayicilar.map((y) => (
-                <div key={y.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="w-11 h-11 rounded-full bg-slate-100 flex items-center justify-center text-lg font-bold text-slate-500">{y.ad?.[0] || "?"}</div>
-                    <div>
-                      <p className="font-semibold text-slate-800 flex items-center gap-2">{y.ad} {y.soyad} <Badge durum={y.durum} /></p>
-                      <p className="text-xs text-slate-400">{y.telefon}</p>
-                      <p className="text-xs text-slate-400 mt-0.5">📍 {y.bolge} · ⭐ {y.puan}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {y.durum === "beklemede" && (<><button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl font-semibold transition">✓ Onayla</button><button onClick={() => yikayiciGuncelle(y.id, "reddedildi")} className="text-xs bg-red-100 hover:bg-red-200 text-red-600 px-4 py-2 rounded-xl font-semibold transition">✕ Reddet</button></>)}
-                    {y.durum === "aktif" && <button onClick={() => yikayiciGuncelle(y.id, "beklemede")} className="text-xs bg-amber-100 hover:bg-amber-200 text-amber-700 px-4 py-2 rounded-xl font-semibold transition">Askıya Al</button>}
-                    {y.durum === "reddedildi" && <button onClick={() => yikayiciGuncelle(y.id, "aktif")} className="text-xs bg-blue-100 hover:bg-blue-200 text-blue-600 px-4 py-2 rounded-xl font-semibold transition">Tekrar Onayla</button>}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {aktifSekme === "kullanicilar" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-bold text-slate-800">Kullanıcılar ({kullanicilar.length})</h2>
-              <input type="text" placeholder="Ad veya soyad ara..." value={aramaK} onChange={(e) => setAramaK(e.target.value)} className="border border-slate-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 w-64" />
-            </div>
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-100">
-                  <tr>{["Kullanıcı", "Telefon", "Kayıt Tarihi"].map((h) => (<th key={h} className="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">{h}</th>))}</tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {filtreKullanicilar.map((k) => (
-                    <tr key={k.id} className="hover:bg-slate-50 transition">
-                      <td className="px-4 py-3"><div className="flex items-center gap-2"><div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center text-xs font-bold">{k.ad?.[0] || "?"}</div><span className="font-medium text-slate-800">{k.ad} {k.soyad}</span></div></td>
-                      <td className="px-4 py-3 text-slate-500">{k.telefon}</td>
-                      <td className="px-4 py-3 text-slate-400">{new Date(k.created_at).toLocaleDateString("tr-TR")}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {filtreKullanicilar.length === 0 && <p className="text-center text-slate-400 text-sm py-8">Kullanıcı bulunamadı.</p>}
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* GÜNÜN FIRSATLARI */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Günün Fırsatları</h3>
+          <button className="text-orange-500 text-sm">Tümü →</button>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[
+            { icon: "🎧", name: "Kablosuz Kulaklık Pro", price: "849", oldPrice: "1.499", discount: "43" },
+            { icon: "👟", name: "Spor Ayakkabı Erkek", price: "629", oldPrice: "999", discount: "37" },
+            { icon: "⌚", name: "Akıllı Saat Siyah", price: "1.249", oldPrice: "1.899", discount: "34" },
+            { icon: "👜", name: "Deri Çanta Kadın", price: "459", oldPrice: "799", discount: "43" },
+          ].map((product) => (
+            <div key={product.name} className="bg-white rounded-lg border border-gray-200 overflow-hidden cursor-pointer hover:-translate-y-1 transition-transform">
+              <div className="h-36 bg-gray-50 flex items-center justify-center text-5xl">
+                {product.icon}
+              </div>
+              <div className="p-3">
+                <p className="text-xs text-gray-500 mb-1">{product.name}</p>
+                <div className="flex items-center gap-1 flex-wrap">
+                  <span className="text-orange-500 font-bold">{product.price} TL</span>
+                  <span className="text-gray-400 text-xs line-through">{product.oldPrice} TL</span>
+                  <span className="bg-red-500 text-white text-xs px-1 rounded">%{product.discount}</span>
+                </div>
+                <div className="text-yellow-400 text-xs mt-1">★★★★★</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ÖNE ÇIKAN DÜKKANLAR */}
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">Öne Çıkan Dükkanlar</h3>
+          <button className="text-orange-500 text-sm">Tümü →</button>
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {[
+            { initials: "TM", name: "TechMart", color: "bg-orange-500" },
+            { initials: "MK", name: "ModaKöşe", color: "bg-green-500" },
+            { initials: "ES", name: "EvcilShop", color: "bg-purple-500" },
+            { initials: "KZ", name: "KozmetikZen", color: "bg-pink-500" },
+            { initials: "SP", name: "SportPlus", color: "bg-blue-500" },
+          ].map((store) => (
+            <div key={store.name} className="flex flex-col items-center gap-2 min-w-28 bg-white rounded-lg border border-gray-200 p-3 cursor-pointer">
+              <div className={`w-11 h-11 rounded-full ${store.color} flex items-center justify-center text-white font-bold`}>
+                {store.initials}
+              </div>
+              <span className="text-xs font-medium text-center">{store.name}</span>
+              <span className="text-xs text-gray-400">⭐ 4.8</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FOOTER */}
+      <footer className="bg-gray-800 text-white mt-8 py-8 px-4">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="text-xl font-bold mb-2">ucuzuygun.com</div>
+          <p className="text-gray-400 text-sm">Türkiye&apos;nin en uygun pazaryeri</p>
+        </div>
+      </footer>
     </div>
   );
 }
